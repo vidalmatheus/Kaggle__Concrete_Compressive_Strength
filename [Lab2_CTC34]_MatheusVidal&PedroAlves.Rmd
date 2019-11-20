@@ -86,14 +86,17 @@ for (i in 1:cromo_quant) {
 ```
 
 ## ATENÇÂO! SOMENTE PARA TESTE!
+
 ```{r}
 testData <- rbind(c(0.9,0.8,1.61),c(0.3,0.1,0.19),c(0.5,0.2,0.45),c(0.88,0.5,1.2744),c(0.6,0.7,1.06))
 
 ```
 
 ## Avaliação dos Cromossomos
+
 ```{r}
-training.model <- trainingData[,c("strength")]
+#training.model <- trainingData[,c("strength")]
+training.model <- testData[,c("strength")]
 erroQuadraticoMedio <- rep(0,cromo_quant)
 for (k in 1:cromo_quant){
   training.data <- c()
@@ -104,7 +107,15 @@ for (k in 1:cromo_quant){
   }
   erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
 }
+```
 
+## Torneio de Cromossomos
+```{r}
+sorteados <- c()
+for (i in 1:cromo_quant){
+  sorteio <- sample(cromo_quant,2)
+  sorteados <- c(sorteados,which.max(erroQuadraticoMedio))
+}
 
 ```
 
