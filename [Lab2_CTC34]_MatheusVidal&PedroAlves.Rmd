@@ -1,0 +1,29 @@
+---
+title: "Concrete Compressive Strength"
+subtitle: "CTC-34_Lab2: Evolução Grmátical"
+author: "Matheus Vidal & Pedro Alves"
+date: "17/11/2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Definição da Gramática
+
+```{r}
+# Limpa área de trabalho
+rm(list = ls())
+
+## Definindo os Cromossomos
+
+cromo_size <- 6
+cromo_quant <- 10
+max_gene <- 1000
+C <- matrix(sample(max_gene,cromo_size),cromo_quant,cromo_size) # Ci = C[i,]
+
+## Aplicando a Regra
