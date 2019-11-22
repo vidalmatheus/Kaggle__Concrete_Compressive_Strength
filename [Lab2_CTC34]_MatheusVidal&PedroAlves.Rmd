@@ -33,7 +33,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-P <- list(c("<exp><op><exp>","<var>"),op,var)
+P <- list(c("<exp><op><exp>","<var><op><exp>"),op,var)
 
 ```
 
