@@ -33,13 +33,13 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-P <- list(c("<exp><op><exp>","<var><op><exp>"),op,var)
+P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
 
 ## Definindo os Cromossomos
 ```{r}
-cromo_size <- 50
+cromo_size <- 100
 cromo_quant <- 200
 max_gene <- 10000
 C <- matrix(sample(max_gene,cromo_size),cromo_quant,cromo_size) # Ci = C[i,]
@@ -189,7 +189,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 100 # número de gerações
+N <- 200 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -207,12 +207,7 @@ for (g in 1:N){
         tmp <- substr(tmp,1,nchar(tmp)-1)
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
         if (!last.char%in%var || is.na(tmp)){ # se terminar em operador
-          if (last.char=="%"){
-            tmp <- substr(tmp,1,nchar(tmp)-2)  
-          }
-          else {
-            tmp <- substr(tmp,1,nchar(tmp)-1)  
-          }
+          tmp <- substr(tmp,1,nchar(tmp)-1)  
         }
         derivacao[i] <- tmp
         S <- "<NA>"
@@ -272,7 +267,7 @@ for (g in 1:N){
   
   ## Cruzamento de Cromossomos
   
-  p.cruzamento <- 0.85
+  p.cruzamento <- 0.8
   i <- 1
   while (i < length(sorteados)){
     # avalia a possibilidade de cruzamento de cada par
