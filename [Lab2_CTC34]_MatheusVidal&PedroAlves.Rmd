@@ -23,7 +23,7 @@ rm(list = ls())
 V <- c("<exp>","<op>","<var>")
 
 # Terminais
-op <- c("+","-","/","*","^")
+op <- c("+","-","/","*","^","%%")
 var <- c("x","y","z","u","v","w","p","q")
 sigma <- c(op,var)
 
@@ -189,7 +189,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 1000 # número de gerações
+N <- 100 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -202,12 +202,17 @@ for (g in 1:N){
     while (S!="<NA>"){
       count <- count + 1
       # evitar loop infinito, para cromossomos mal escolhidos:
-      if (count > 50){
+      if (count > 100){
         tmp <- stringr::str_match(derivacao[i], ".*?<")
         tmp <- substr(tmp,1,nchar(tmp)-1)
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
         if (!last.char%in%var || is.na(tmp)){ # se terminar em operador
-          tmp <- substr(tmp,1,nchar(tmp)-1)  
+          if (last.char=="%"){
+            tmp <- substr(tmp,1,nchar(tmp)-2)  
+          }
+          else {
+            tmp <- substr(tmp,1,nchar(tmp)-1)  
+          }
         }
         derivacao[i] <- tmp
         S <- "<NA>"
@@ -267,7 +272,7 @@ for (g in 1:N){
   
   ## Cruzamento de Cromossomos
   
-  p.cruzamento <- 0.8
+  p.cruzamento <- 0.85
   i <- 1
   while (i < length(sorteados)){
     # avalia a possibilidade de cruzamento de cada par
