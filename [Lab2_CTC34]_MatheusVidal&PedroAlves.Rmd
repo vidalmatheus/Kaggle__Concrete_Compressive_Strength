@@ -23,7 +23,7 @@ rm(list = ls())
 V <- c("<exp>","<op>","<var>")
 
 # Terminais
-op <- c("+","-","/","*","^","%%")
+op <- c("+","-","/","*","^")
 var <- c("x","y","z","u","v","w","p","q")
 sigma <- c(op,var)
 
