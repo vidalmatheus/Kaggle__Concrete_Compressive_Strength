@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>","<const>")
+V <- c("<exp>","<op>","<var>","<dig>")
 
 # Terminais
 op <- c("+","-","/","*")
@@ -40,6 +40,8 @@ seno <- c("sin(<var>)","sin(<var><op><exp>)")
 senoh <- c("sinh(<var>)","sinh(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
 cossenoh <- c("cosh(<var>)","cosh(<var><op><exp>)")
+tangente <- c("tan(<var>)","tan(<var><op><exp>)")
+tangenteh <- c("tanh(<var>)","tanh(<var><op><exp>)")
 logaritmo <- c("log(<var>)","log(<var><op><exp>)")
 exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
 exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
@@ -50,7 +52,7 @@ constante <- c("0.<dig><dig><dig><op><exp>")
 dig <- c("1","2","3","4","5","6","7","8","9")
 
 
-P <- list(c(basicas,exp_natural,senoh,cossenoh,incremento,decremento,constante),op,var,dig)
+P <- list(c(basicas,exp_natural,senoh,tangente,tangenteh,cossenoh,constante),op,var,dig)
 #P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
@@ -95,7 +97,7 @@ for (i in 1:cromo_quant) {
   while (S!="<NA>"){
     count <- count + 1
     # evitar loop infinito, para cromossomos mal escolhidos:
-    if (count > 40){
+    if (count > 60){
       tmp <- stringr::str_match(derivacao[i], ".*?<")
       tmp <- substr(tmp,1,nchar(tmp)-1)
       if (is.na(tmp)){
