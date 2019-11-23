@@ -24,8 +24,29 @@ V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>
 
 # Terminais
 op <- c("+","-","/","*")
+# Geração de constantes
+max_const <- 3.15
+const_quant <- 250000
+amostra <- 250000
+const <- runif(const_quant,min = -max_const,max=max_const)
 
-var <- c("x","y","z","u","v","w","p","q")
+max_const <- 100
+const_quant <- 250000
+amostra <- 250000
+const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+
+max_const <- 1000
+const_quant <- 250000
+amostra <- 250000
+const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+
+max_const <- 100000
+const_quant <- 250000
+amostra <- 250000
+const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+
+var <- rep(c("x","y","z","u","v","w","p","q"),10000)
+var<-c(var,const)
 sigma <- c(op,var)
 
 #sigma <- c("+","-","/","*","x","y")
@@ -34,26 +55,19 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-basicas <- rep(c("<exp><op><exp>"),30)
-variavel <- rep(c("<var>"),10)
-seno <- c("sin(<var>)","sin(<var><op><exp>)")
-cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
-logaritmo <- c("log(<var>)","log(<var><op><exp>)")
-exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
-exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
-modulo <- c("abs(<var>)","abs(<var><op><exp>)")
-incremento <- c("<var>+1","<var>+1<op><exp>")
-decremento <- c("<var>-1","<var>-1<op><exp>")
-
-# Geração de constantes
-max_const <- 1
-const_quant <- 1000
-amostra <- 1
-const <- runif(const_quant,min = -max_const,max=max_const)
-constante <- const[sample(max_const,amostra)]
+basicas <- rep(c("<exp><op><exp>"),1200)
+variavel <- rep(c("<var>"),900)
+seno <- c("sin(<var>)",rep(c("sin(<var><op><exp>)"),9))
+cosseno <- c("cos(<var>)",rep(c("cos(<var><op><exp>)"),9))
+logaritmo <- c("log(<var>)",rep(c("log(<var><op><exp>)"),9))
+exp_natural <- c("exp(<var>)",rep(c("exp(<var><op><exp>)"),9))
+exponencial <- c("<exp>^(<var>)",rep(c("<exp>^(<var><op><exp>)"),9))
+modulo <- c("abs(<var>)",rep(c("abs(<var><op><exp>)"),9))
 
 
-P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento,constante),op,var)
+
+
+P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
@@ -192,7 +206,8 @@ erroQuadraticoMedio
 sorteados <- c()
 #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
 validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
-for (i in 1:cromo_quant){
+sorteados <- order(erroQuadraticoMedio[validos])[1:50]
+for (i in 51:cromo_quant){
   sorteio <- rep(NA,cromo_quant)
   pos <- sample(validos,2) # sorteio dois crommossomos
   #sorteio[pos[i,]] <- pos[i,]
@@ -207,7 +222,7 @@ sorteados
 
 ```{r}
 p.cruzamento <- 0.8
-i <- 1
+i <- 51
 while (i < length(sorteados)){
   # avalia a possibilidade de cruzamento de cada par
   vai.cruzar <- runif(1)
@@ -226,9 +241,9 @@ while (i < length(sorteados)){
 ## Mutação
 
 ```{r}
-p.mutacao <- 0.1
+p.mutacao <- 0.4
 vai.mutar <- runif(cromo_size*cromo_quant)
-for (i in 1:length(vai.mutar)){
+for (i in 51:length(vai.mutar)){
   if (vai.mutar[i]<p.mutacao){
     linha <- i%%cromo_quant+1
     coluna <- (i-cromo_size*(i%%cromo_quant))%%cromo_size
@@ -242,7 +257,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 25 # número de gerações
+N <- 150 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -338,7 +353,8 @@ for (g in 1:N){
   sorteados <- c()
   #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
   validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
-  for (i in 1:cromo_quant){
+  sorteados <- order(erroQuadraticoMedio[validos])[1:50]
+  for (i in 51:cromo_quant){
     sorteio <- rep(NA,cromo_quant)
     pos <- sample(validos,2) # sorteio dois crommossomos
     #sorteio[pos[i,]] <- pos[i,]
@@ -351,7 +367,7 @@ for (g in 1:N){
   ## Cruzamento de Cromossomos
   
   p.cruzamento <- 0.8
-  i <- 1
+  i <- 51
   while (i < length(sorteados)){
     # avalia a possibilidade de cruzamento de cada par
     vai.cruzar <- runif(1)
@@ -368,9 +384,9 @@ for (g in 1:N){
   
   ## Mutação
   
-  p.mutacao <- 0.1
+  p.mutacao <- 0.4
   vai.mutar <- runif(cromo_size*cromo_quant)
-  for (i in 1:length(vai.mutar)){
+  for (i in 51:length(vai.mutar)){
     if (vai.mutar[i]<p.mutacao){
       linha <- i%%cromo_quant+1
       coluna <- (i-cromo_size*(i%%cromo_quant))%%cromo_size
