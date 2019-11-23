@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>","<const>")
+V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>")
 
 # Terminais
 op <- c("+","-","/","*")
@@ -34,7 +34,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-basicas <- rep(c("<exp><op><exp>"),30)
+basicas <- rep(c("<exp><op><exp>"),30) # as operações básicas são mais prováveis
 variavel <- rep(c("<var>"),10)
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
@@ -45,15 +45,15 @@ modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 incremento <- c("<var>+1","<var>+1<op><exp>")
 decremento <- c("<var>-1","<var>-1<op><exp>")
 
-# Geração de constantes
-max_const <- 1
-const_quant <- 1000
-amostra <- 1
-const <- runif(const_quant,min = -max_const,max=max_const)
-constante <- const[sample(max_const,amostra)]
+# # Geração de constantes
+# max_const <- 1
+# const_quant <- 1000
+# amostra <- 1
+# const <- runif(const_quant,min = -max_const,max=max_const)
+# constante <- const[sample(max_const,amostra)]
 
 
-P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento,constante),op,var)
+P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
@@ -71,7 +71,12 @@ C <- matrix(sample(max_gene,cromo_size*cromo_quant),cromo_quant,cromo_size) # Ci
 
 ```{r}
 trainingData <- read.csv(file="training.csv", header=TRUE, sep=",")
+```
 
+## Carregamento dos Dados de Teste
+
+```{r}
+testingData <- read.csv(file="testing.csv", header=TRUE, sep=",")
 ```
 
 ## Gerando Derivação
@@ -149,12 +154,6 @@ for (i in 1:cromo_quant) {
 }
 ```
 
-## Caso de Teste
-
-```{r}
-#testData <- rbind(c(0.9,0.8,1.61),c(0.3,0.1,0.19),c(0.5,0.2,0.45),c(0.88,0.5,1.2744),c(0.6,0.7,1.06))
-
-```
 
 ## Avaliação dos Cromossomos
 
@@ -237,12 +236,112 @@ for (i in 1:length(vai.mutar)){
 }
 ```
 
+## Escolha do Cromossomo Vencedor
+
+Escolhemos o melhor cromossomo, i.e., o de menor erro quadrático médio.
+
+```{r}
+training.model <- trainingData[,c("strength")]
+erroQuadraticoMedio <- rep(0,cromo_quant)
+for (k in 1:cromo_quant){
+  training.data <- c()
+  for (i in 1:length(training.model)){
+    x <- trainingData[i,2]
+    y <- trainingData[i,3]
+    z <- trainingData[i,4]
+    u <- trainingData[i,5]
+    v <- trainingData[i,6]
+    w <- trainingData[i,7]
+    p <- trainingData[i,8]
+    q <- trainingData[i,9]
+    valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
+    training.data <- c(training.data,valor)
+  }
+  erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
+}
+
+# Cromossomo vencedor:
+vencedor <- which.min(erroQuadraticoMedio)
+derivacao_vencedora <- derivacao[vencedor]
+cromossomo_vencedor <- C[vencedor,]
+vencedor
+derivacao[vencedor]
+
+```
+
+## População Vencedora
+```{r}
+populacao_vencedora <- C
+```
+  
+## Predição de Dados
+  
+Vamos aplicar o cromossomo vencedor para predizer o dado de saída a partir de entradas advindas de <i>testing.csv</i>.
+
+```{r}
+predict.data <- c()
+for (i in 1:dim(testingData)[1]){
+  x <- trainingData[i,2]
+  y <- trainingData[i,3]
+  z <- trainingData[i,4]
+  u <- trainingData[i,5]
+  v <- trainingData[i,6]
+  w <- trainingData[i,7]
+  p <- trainingData[i,8]
+  q <- trainingData[i,9]
+  predict.data <- c(predict.data,eval(parse(text=derivacao[vencedor])))
+}
+```
+
+## Visuzalicação dos Dados Preditos
+
+```{r}
+#plot
+plot(predict.data)
+
+```
+
+```{r}
+# boxplot
+boxplot(predict.data)
+
+```
+
+## Construindo predicted.csv
+
+```{r}
+ID <- testingData[c("ID")]
+result <- data.frame(ID,predict.data)
+colnames(result) <- c("ID", "strength")
+write.table(result,file="predicted.csv",col.names = c("ID","strength"),sep = ",")
+result.data <- read.csv(file="predicted.csv", header=TRUE, sep=",")
+
+```
+
+## Comparando com o testing.csv
+
+```{r}
+testing.data <- testingData[,c("strength")]
+
+raizErroQuadraticoMedioMin <- sqrt(mean((predict.data - (testing.data))^2))
+raizErroQuadraticoMedioMin
+```
+
+
+```{r}
+ plot(predict.data,testing.data,
+      xlab="predicted",ylab="actual")
+ abline(a=0,b=1)
+
+```
+
+
 ## Após N Gerações
 
 Repetindo para N gerações.
 
 ```{r}
-N <- 25 # número de gerações
+N <- 2 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -378,19 +477,40 @@ for (g in 1:N){
     }
   }
 
-}
-```
+  ## Escolha do Cromossomo Vencedor
 
-## Escolha do Cromossomo Vencedor
-
-Escolhemos o melhor cromossomo, <i>i.e.</i>, o de menor erro quadrático médio.
-
-```{r}
-training.model <- trainingData[,c("strength")]
-erroQuadraticoMedio <- rep(0,cromo_quant)
-for (k in 1:cromo_quant){
-  training.data <- c()
-  for (i in 1:length(training.model)){
+  # Escolhemos o melhor cromossomo, i.e., o de menor erro quadrático médio.
+  
+  training.model <- trainingData[,c("strength")]
+  erroQuadraticoMedio <- rep(0,cromo_quant)
+  for (k in 1:cromo_quant){
+    training.data <- c()
+    for (i in 1:length(training.model)){
+      x <- trainingData[i,2]
+      y <- trainingData[i,3]
+      z <- trainingData[i,4]
+      u <- trainingData[i,5]
+      v <- trainingData[i,6]
+      w <- trainingData[i,7]
+      p <- trainingData[i,8]
+      q <- trainingData[i,9]
+      valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
+      training.data <- c(training.data,valor)
+    }
+    erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
+  }
+  
+  # Cromossomo vencedor:
+  vencedor <- which.min(erroQuadraticoMedio)
+  vencedor
+  derivacao[vencedor]
+  
+  ## Predição de Dados
+  
+  # Vamos aplicar o cromossomo vencedor para predizer o dado de saída a partir de entradas advindas de <i>testing.csv</i>.
+  
+  predict.data <- c()
+  for (i in 1:dim(testingData)[1]){
     x <- trainingData[i,2]
     y <- trainingData[i,3]
     z <- trainingData[i,4]
@@ -399,29 +519,30 @@ for (k in 1:cromo_quant){
     w <- trainingData[i,7]
     p <- trainingData[i,8]
     q <- trainingData[i,9]
-    valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
-    training.data <- c(training.data,valor)
+    predict.data <- c(predict.data,eval(parse(text=derivacao[vencedor])))
   }
-  erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
+  
+  ## Comparando com o testing.csv
+
+  testing.data <- testingData[,c("strength")]
+  
+  raizErroQuadraticoMedio <- sqrt(mean((predict.data - (testing.data))^2))
+  raizErroQuadraticoMedio
+  
+  # Verifica se é Ponto de Mínimo Erro
+  if (raizErroQuadraticoMedio<raizErroQuadraticoMedioMin){
+    raizErroQuadraticoMedioMin <- raizErroQuadraticoMedio
+    cromossomo_vencedor <- C[vencedor,]
+    derivacao_vencedora <- derivacao[vencedor]
+    populacao_vencedora <- C
+  }
 }
-
-# Cromossomo vencedor:
-vencedor <- which.min(erroQuadraticoMedio)
-vencedor
-derivacao[vencedor]
 ```
 
-## Carregamento dos Dados de Teste
-
-```{r}
-testingData <- read.csv(file="testing.csv", header=TRUE, sep=",")
-
-```
 
 ## Predição de Dados
-
+  
 Vamos aplicar o cromossomo vencedor para predizer o dado de saída a partir de entradas advindas de <i>testing.csv</i>.
-
 
 ```{r}
 predict.data <- c()
@@ -438,6 +559,8 @@ for (i in 1:dim(testingData)[1]){
 }
 ```
 
+## Visuzalicação dos Dados Preditos Após N Gerações
+
 ```{r}
 #plot
 plot(predict.data)
@@ -450,6 +573,24 @@ boxplot(predict.data)
 
 ```
 
+## Resultado:
+
+```{r}
+raizErroQuadraticoMedioMin
+cromossomo_vencedor
+derivacao_vencedora
+
+```
+
+
+```{r}
+ plot(predict.data,testing.data,
+      xlab="predicted",ylab="actual")
+ abline(a=0,b=1)
+
+```
+
+
 ## Construindo predicted.csv
 ```{r}
 ID <- testingData[c("ID")]
@@ -460,21 +601,4 @@ result.data <- read.csv(file="predicted.csv", header=TRUE, sep=",")
 
 ```
 
-
-## Comparando com o testing.csv
-
-```{r}
-testing.data <- testingData[,c("strength")]
-
-raizErroQuadraticoMedio <- sqrt(mean((predict.data - (testing.data))^2))
-raizErroQuadraticoMedio
-
-```
-
-```{r}
- plot(predict.data,testing.data,
-      xlab="predicted",ylab="actual")
- abline(a=0,b=1)
-
-```
 
