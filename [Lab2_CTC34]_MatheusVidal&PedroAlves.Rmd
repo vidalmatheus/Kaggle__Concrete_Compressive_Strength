@@ -33,6 +33,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
+basicas <- rep(c("<exp><op><exp>","<var>"),100)
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
 logaritmo <- c("log(<var>)","log(<var><op><exp>)")
@@ -40,7 +41,7 @@ exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
 exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 
-P <- list(c("<exp><op><exp>","<var>",seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
+P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
@@ -183,12 +184,10 @@ erroQuadraticoMedio
 ```{r}
 sorteados <- c()
 #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
+validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
 for (i in 1:cromo_quant){
   sorteio <- rep(NA,cromo_quant)
-  pos <- sample(cromo_quant,2) # sorteio dois crommossomos
-  while (is.na(erroQuadraticoMedio[pos[1]]) || is.na(erroQuadraticoMedio[pos[2]]) || erroQuadraticoMedio[pos[1]]==Inf || erroQuadraticoMedio[pos[2]]==Inf){
-    pos <- sample(cromo_quant,2) # sorteio dois crommossomos  
-  }
+  pos <- sample(validos,2) # sorteio dois crommossomos
   #sorteio[pos[i,]] <- pos[i,]
   sorteio[pos] <- pos
   sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
@@ -236,7 +235,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 100 # número de gerações
+N <- 20 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -331,12 +330,10 @@ for (g in 1:N){
   
   sorteados <- c()
   #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
+  validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
   for (i in 1:cromo_quant){
     sorteio <- rep(NA,cromo_quant)
-    pos <- sample(cromo_quant,2) # sorteio dois crommossomos
-    while (is.na(erroQuadraticoMedio[pos[1]]) || is.na(erroQuadraticoMedio[pos[2]]) || erroQuadraticoMedio[pos[1]]==Inf || erroQuadraticoMedio[pos[2]]==Inf){
-      pos <- sample(cromo_quant,2) # sorteio dois crommossomos  
-    }
+    pos <- sample(validos,2) # sorteio dois crommossomos
     #sorteio[pos[i,]] <- pos[i,]
     sorteio[pos] <- pos
     sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
