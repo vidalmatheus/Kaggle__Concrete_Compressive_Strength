@@ -341,7 +341,7 @@ raizErroQuadraticoMedioMin
 Repetindo para N gerações.
 
 ```{r}
-N <- 2 # número de gerações
+N <- 100 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
