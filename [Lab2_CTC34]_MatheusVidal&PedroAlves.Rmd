@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>")
+V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>","<const>")
 
 # Terminais
 op <- c("+","-","/","*")
@@ -37,23 +37,21 @@ S <- "<exp>"
 basicas <- rep(c("<exp><op><exp>"),30) # as operações básicas são mais prováveis
 variavel <- rep(c("<var>"),10)
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
+senoh <- c("sinh(<var>)","sinh(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
+cossenoh <- c("cosh(<var>)","cosh(<var><op><exp>)")
 logaritmo <- c("log(<var>)","log(<var><op><exp>)")
 exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
 exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 incremento <- c("<var>+1","<var>+1<op><exp>")
 decremento <- c("<var>-1","<var>-1<op><exp>")
-
-# # Geração de constantes
-# max_const <- 1
-# const_quant <- 1000
-# amostra <- 1
-# const <- runif(const_quant,min = -max_const,max=max_const)
-# constante <- const[sample(max_const,amostra)]
+constante <- c("0.<dig><dig><dig><op><exp>")
+dig <- c("1","2","3","4","5","6","7","8","9")
 
 
-P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento),op,var)
+P <- list(c(basicas,exp_natural,senoh,cossenoh,incremento,decremento,constante),op,var,dig)
+#P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
@@ -61,7 +59,7 @@ P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,increm
 ## Definindo os Cromossomos
 ```{r}
 cromo_size <- 100
-cromo_quant <- 1000
+cromo_quant <- 500
 max_gene <- 100000
 C <- matrix(sample(max_gene,cromo_size*cromo_quant),cromo_quant,cromo_size) # Ci = C[i,]
 
@@ -97,7 +95,7 @@ for (i in 1:cromo_quant) {
   while (S!="<NA>"){
     count <- count + 1
     # evitar loop infinito, para cromossomos mal escolhidos:
-    if (count > 30){
+    if (count > 40){
       tmp <- stringr::str_match(derivacao[i], ".*?<")
       tmp <- substr(tmp,1,nchar(tmp)-1)
       if (is.na(tmp)){
@@ -114,6 +112,8 @@ for (i in 1:cromo_quant) {
             tmp <- substr(tmp,1,nchar(tmp)-1)    
           } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
             tmp <- substr(tmp,1,nchar(tmp)-2)
+          } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h("){
+            tmp <- substr(tmp,1,nchar(tmp)-5) 
           } else if (last.char=="("){
             tmp <- substr(tmp,1,nchar(tmp)-4)    
           }
@@ -146,6 +146,11 @@ for (i in 1:cromo_quant) {
       S <- paste("<",S[,2],">",sep = "") # novo símbolo
     } else if (S=="<var>"){
       rule <- P[[3]][1+C[i,j]%%length(P[[3]])] # determina a regra a ser aplicada
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+      S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
+      S <- paste("<",S[,2],">",sep = "") # novo símbolo
+    } else if (S=="<dig>"){
+      rule <- P[[4]][1+C[i,j]%%length(P[[4]])] # determina a regra a ser aplicada
       derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
       S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
       S <- paste("<",S[,2],">",sep = "") # novo símbolo
@@ -341,7 +346,7 @@ raizErroQuadraticoMedioMin
 Repetindo para N gerações.
 
 ```{r}
-N <- 100 # número de gerações
+N <- 30 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -354,7 +359,7 @@ for (g in 1:N){
     while (S!="<NA>"){
       count <- count + 1
       # evitar loop infinito, para cromossomos mal escolhidos:
-      if (count > 30){
+      if (count > 40){
         tmp <- stringr::str_match(derivacao[i], ".*?<")
         tmp <- substr(tmp,1,nchar(tmp)-1)
         if (is.na(tmp)){
@@ -371,6 +376,8 @@ for (g in 1:N){
               tmp <- substr(tmp,1,nchar(tmp)-1)    
             } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
               tmp <- substr(tmp,1,nchar(tmp)-2)
+            } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h("){
+              tmp <- substr(tmp,1,nchar(tmp)-5)
             } else if (last.char=="("){
               tmp <- substr(tmp,1,nchar(tmp)-4)    
             }
@@ -403,6 +410,11 @@ for (g in 1:N){
         S <- paste("<",S[,2],">",sep = "") # novo símbolo
       } else if (S=="<var>"){
         rule <- P[[3]][1+C[i,j]%%length(P[[3]])] # determina a regra a ser aplicada
+        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+        S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
+        S <- paste("<",S[,2],">",sep = "") # novo símbolo
+      } else if (S=="<dig>"){
+        rule <- P[[4]][1+C[i,j]%%length(P[[4]])] # determina a regra a ser aplicada
         derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
         S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
         S <- paste("<",S[,2],">",sep = "") # novo símbolo
