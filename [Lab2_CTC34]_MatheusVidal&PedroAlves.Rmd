@@ -375,7 +375,7 @@ raizErroQuadraticoMedioMin
 Repetindo para N gerações.
 
 ```{r}
-N <- 10 # número de gerações
+N <- 50 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -547,7 +547,9 @@ for (g in 1:N){
   
   ## Piores São Regerados
   
-  C[which(!c(1:cromo_quant) %in% para.cruzar),] <- sample(max_gene,cromo_size)
+  tmp <- C[which(!c(1:cromo_quant) %in% para.cruzar),]
+  tmp <- matrix(sample(max_gene,length(tmp)),dim(tmp)[1],dim(tmp)[2])
+  C[which(!c(1:cromo_quant) %in% para.cruzar),] <- tmp
 
   
   ## Mutação
