@@ -20,10 +20,10 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>")
+V <- c("<exp>","<op>","<var>","<sin>","<log>","<e>","<^>","<abs>")
 
 # Terminais
-op <- c("+","-","/","*","^")
+op <- c("+","-","/","*")
 var <- c("x","y","z","u","v","w","p","q")
 sigma <- c(op,var)
 
@@ -33,16 +33,28 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-P <- list(c("<exp><op><exp>","<var>"),op,var)
+seno <- c("sin(<var>)","sin(<var><op><exp>)")
+logaritmo <- c("log(<var>)","log(<var><op><exp>)")
+exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
+exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
+modulo <- c("abs(<var>)","abs(<var><op><exp>)")
+
+P <- list(c("<exp><op><exp>","<var>",seno,logaritmo,exp_natural,exponencial,modulo),op,var)
+#P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
 
 ## Definindo os Cromossomos
 ```{r}
-cromo_size <- 100
+cromo_size <- 50
 cromo_quant <- 200
 max_gene <- 10000
-C <- matrix(sample(max_gene,cromo_size),cromo_quant,cromo_size) # Ci = C[i,]
+C <- matrix(sample(max_gene,cromo_size*cromo_quant),cromo_quant,cromo_size) # Ci = C[i,]
+
+# Geração de constantes
+max_const <- 1000
+const_quant <- 100
+const <- sample(max_const,const_quant)
 
 ```
 
@@ -62,6 +74,7 @@ trainingData <- read.csv(file="training.csv", header=TRUE, sep=",")
 #C[3,] <- c(9,40,7,43,2,11)
 #C[4,] <- c(20,5,200,5,67,23)
 # FIM
+S <- "<exp>"
 derivacao <- rep(S,cromo_quant) # símbolo inicial
 for (i in 1:cromo_quant) {
   S <- "<exp>"
@@ -73,10 +86,36 @@ for (i in 1:cromo_quant) {
     if (count > 100){
       tmp <- stringr::str_match(derivacao[i], ".*?<")
       tmp <- substr(tmp,1,nchar(tmp)-1)
-      last.char <- substr(tmp,nchar(tmp),nchar(tmp))
-      if (!last.char%in%var || is.na(tmp)){ # se terminar em operador
-        tmp <- substr(tmp,1,nchar(tmp)-1)  
+      if (is.na(tmp)){
+        last.char <- substr(tmp,nchar(derivacao[i]),nchar(derivacao[i]))
+        if (!last.char%in%var){
+          tmp <- substr(derivacao[i],1,nchar(derivacao[i])-1)  
+        }
       }
+      else {
+        last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+        if (!last.char%in%var){ 
+          # se terminar em operador
+          if (last.char%in%op){
+            tmp <- substr(tmp,1,nchar(tmp)-1)    
+          } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
+            tmp <- substr(tmp,1,nchar(tmp)-2)
+          } else if (last.char=="("){
+            tmp <- substr(tmp,1,nchar(tmp)-4)    
+          }
+        }
+        last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+        # se terminar em operador
+        if (last.char%in%op){
+          tmp <- substr(tmp,1,nchar(tmp)-1)    
+        }
+      }
+      # colocar parênteses restantes
+      abrindo <- stringr::str_count(tmp,"\\(")
+      fechando <- stringr::str_count(tmp,"\\)")
+      add <- strrep(")",abrindo-fechando)
+      tmp <- paste(tmp,add,sep = "")
+    
       derivacao[i] <- tmp
       S <- "<NA>"
     }
@@ -111,11 +150,13 @@ for (i in 1:cromo_quant) {
 ## Avaliação dos Cromossomos
 
 ```{r}
+options(warn = -1)
 training.model <- trainingData[,c("strength")]
 #training.model <- testData[,3]
-erroQuadraticoMedio <- rep(0,cromo_quant)
+erroQuadraticoMedio <- rep(Inf,cromo_quant)
 for (k in 1:cromo_quant){
   training.data <- c()
+  caso.nan <- FALSE
   for (i in 1:length(training.model)){
     #x <- testData[i,1]
     #y <- testData[i,2]
@@ -127,10 +168,12 @@ for (k in 1:cromo_quant){
     w <- trainingData[i,7]
     p <- trainingData[i,8]
     q <- trainingData[i,9]
-    training.data <- c(training.data,eval(parse(text=derivacao[k])))
+    valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
+    training.data <- c(training.data,valor)
   }
   erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
 }
+options(warn = 0)
 erroQuadraticoMedio
 ```
 
@@ -142,6 +185,9 @@ sorteados <- c()
 for (i in 1:cromo_quant){
   sorteio <- rep(NA,cromo_quant)
   pos <- sample(cromo_quant,2) # sorteio dois crommossomos
+  while (is.na(erroQuadraticoMedio[pos[1]]) || is.na(erroQuadraticoMedio[pos[2]]) || erroQuadraticoMedio[pos[1]]==Inf || erroQuadraticoMedio[pos[2]]==Inf){
+    pos <- sample(cromo_quant,2) # sorteio dois crommossomos  
+  }
   #sorteio[pos[i,]] <- pos[i,]
   sorteio[pos] <- pos
   sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
@@ -189,7 +235,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 200 # número de gerações
+N <- 100 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -205,10 +251,36 @@ for (g in 1:N){
       if (count > 100){
         tmp <- stringr::str_match(derivacao[i], ".*?<")
         tmp <- substr(tmp,1,nchar(tmp)-1)
-        last.char <- substr(tmp,nchar(tmp),nchar(tmp))
-        if (!last.char%in%var || is.na(tmp)){ # se terminar em operador
-          tmp <- substr(tmp,1,nchar(tmp)-1)  
+        if (is.na(tmp)){
+          last.char <- substr(tmp,nchar(derivacao[i]),nchar(derivacao[i]))
+          if (!last.char%in%var){
+            tmp <- substr(derivacao[i],1,nchar(derivacao[i])-1)  
+          }
         }
+        else {
+          last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+          if (!last.char%in%var){ 
+            # se terminar em operador
+            if (last.char%in%op){
+              tmp <- substr(tmp,1,nchar(tmp)-1)    
+            } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
+              tmp <- substr(tmp,1,nchar(tmp)-2)
+            } else if (last.char=="("){
+              tmp <- substr(tmp,1,nchar(tmp)-4)    
+            }
+          }
+          last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+          # se terminar em operador
+          if (last.char%in%op){
+            tmp <- substr(tmp,1,nchar(tmp)-1)    
+          }
+        }
+        # colocar parênteses restantes
+        abrindo <- stringr::str_count(tmp,"\\(")
+        fechando <- stringr::str_count(tmp,"\\)")
+        add <- strrep(")",abrindo-fechando)
+        tmp <- paste(tmp,add,sep = "")
+      
         derivacao[i] <- tmp
         S <- "<NA>"
       }
@@ -247,7 +319,8 @@ for (g in 1:N){
       w <- trainingData[i,7]
       p <- trainingData[i,8]
       q <- trainingData[i,9]
-      training.data <- c(training.data,eval(parse(text=derivacao[k])))
+      valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
+      training.data <- c(training.data,valor)
     }
     erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
   }
@@ -256,9 +329,14 @@ for (g in 1:N){
   ## Torneio de Cromossomos
   
   sorteados <- c()
+  #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
   for (i in 1:cromo_quant){
     sorteio <- rep(NA,cromo_quant)
     pos <- sample(cromo_quant,2) # sorteio dois crommossomos
+    while (is.na(erroQuadraticoMedio[pos[1]]) || is.na(erroQuadraticoMedio[pos[2]]) || erroQuadraticoMedio[pos[1]]==Inf || erroQuadraticoMedio[pos[2]]==Inf){
+      pos <- sample(cromo_quant,2) # sorteio dois crommossomos  
+    }
+    #sorteio[pos[i,]] <- pos[i,]
     sorteio[pos] <- pos
     sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
   }
@@ -316,7 +394,8 @@ for (k in 1:cromo_quant){
     w <- trainingData[i,7]
     p <- trainingData[i,8]
     q <- trainingData[i,9]
-    training.data <- c(training.data,eval(parse(text=derivacao[k])))
+    valor <- suppressWarnings(eval(parse(text=derivacao[k]))) 
+    training.data <- c(training.data,valor)
   }
   erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
 }
@@ -324,6 +403,7 @@ for (k in 1:cromo_quant){
 # Cromossomo vencedor:
 vencedor <- which.min(erroQuadraticoMedio)
 vencedor
+derivacao[vencedor]
 ```
 
 ## Carregamento dos Dados de Teste
