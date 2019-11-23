@@ -555,7 +555,7 @@ for (i in 1:dim(testingData)[1]){
   w <- trainingData[i,7]
   p <- trainingData[i,8]
   q <- trainingData[i,9]
-  predict.data <- c(predict.data,eval(parse(text=derivacao[vencedor])))
+  predict.data <- c(predict.data,eval(parse(text=derivacao_vencedora)))
 }
 ```
 
