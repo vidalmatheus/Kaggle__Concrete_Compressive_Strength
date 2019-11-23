@@ -20,10 +20,11 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>")
+V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>","<const>")
 
 # Terminais
 op <- c("+","-","/","*")
+
 var <- c("x","y","z","u","v","w","p","q")
 sigma <- c(op,var)
 
@@ -33,30 +34,36 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-basicas <- rep(c("<exp><op><exp>","<var>"),100)
+basicas <- rep(c("<exp><op><exp>"),30)
+variavel <- rep(c("<var>"),5)
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
 logaritmo <- c("log(<var>)","log(<var><op><exp>)")
 exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
 exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
+incremento <- c("<var>+1","<var>+1<op><exp>")
+decremento <- c("<var>-1","<var>-1<op><exp>")
 
-P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
+# Geração de constantes
+max_const <- 10
+const_quant <- 1000
+amostra <- 5
+const <- runif(const_quant,min = -max_const,max=max_const)
+constante <- const[sample(max_const,amostra)]
+
+
+P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo,incremento,decremento,constante),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
 
 ## Definindo os Cromossomos
 ```{r}
-cromo_size <- 50
-cromo_quant <- 200
-max_gene <- 10000
+cromo_size <- 100
+cromo_quant <- 1000
+max_gene <- 100000
 C <- matrix(sample(max_gene,cromo_size*cromo_quant),cromo_quant,cromo_size) # Ci = C[i,]
-
-# Geração de constantes
-max_const <- 1000
-const_quant <- 100
-const <- sample(max_const,const_quant)
 
 ```
 
@@ -85,7 +92,7 @@ for (i in 1:cromo_quant) {
   while (S!="<NA>"){
     count <- count + 1
     # evitar loop infinito, para cromossomos mal escolhidos:
-    if (count > 100){
+    if (count > 30){
       tmp <- stringr::str_match(derivacao[i], ".*?<")
       tmp <- substr(tmp,1,nchar(tmp)-1)
       if (is.na(tmp)){
@@ -235,7 +242,7 @@ for (i in 1:length(vai.mutar)){
 Repetindo para N gerações.
 
 ```{r}
-N <- 20 # número de gerações
+N <- 2 # número de gerações
 for (g in 1:N){
   ## Gerando Derivação
 
@@ -248,7 +255,7 @@ for (g in 1:N){
     while (S!="<NA>"){
       count <- count + 1
       # evitar loop infinito, para cromossomos mal escolhidos:
-      if (count > 100){
+      if (count > 30){
         tmp <- stringr::str_match(derivacao[i], ".*?<")
         tmp <- substr(tmp,1,nchar(tmp)-1)
         if (is.na(tmp)){
