@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 rm(list = ls())
 
 # Não Terminais
-V <- c("<exp>","<op>","<var>","<sin>","<log>","<e>","<^>","<abs>")
+V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>")
 
 # Terminais
 op <- c("+","-","/","*")
@@ -34,12 +34,13 @@ S <- "<exp>"
 
 # Produções
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
+cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
 logaritmo <- c("log(<var>)","log(<var><op><exp>)")
 exp_natural <- c("exp(<var>)","exp(<var><op><exp>)")
 exponencial <- c("<exp>^(<var>)","<exp>^(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 
-P <- list(c("<exp><op><exp>","<var>",seno,logaritmo,exp_natural,exponencial,modulo),op,var)
+P <- list(c("<exp><op><exp>","<var>",seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
