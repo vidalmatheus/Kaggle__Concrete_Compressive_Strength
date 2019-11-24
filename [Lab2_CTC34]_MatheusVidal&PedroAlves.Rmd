@@ -24,8 +24,8 @@ V <- c("<exp>","<op>","<var>","<dig>")
 
 # Terminais
 op <- c("+","-","/","*")
-
 var <- c("x","y","z","u","v","w","p","q")
+dig <- c("1","2","3","4","5","6","7","8","9")
 sigma <- c(op,var)
 
 #sigma <- c("+","-","/","*","x","y")
@@ -34,8 +34,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-basicas <- rep(c("<exp><op><exp>"),30) # as operações básicas são mais prováveis
-variavel <- rep(c("<var>"),5)
+basicas <- c(rep("<var>",0),rep("<exp><op><exp>",30)) # as operações básicas são mais prováveis
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
 senoh <- c("sinh(<var>)","sinh(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
@@ -49,10 +48,10 @@ raiz <- c("sqrt(<var>)","sqrt(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 incremento <- c("<var>+1","<var>+1<op><exp>")
 decremento <- c("<var>-1","<var>-1<op><exp>")
-constante <- c("0.<dig><dig><dig>",rep("0.<dig><dig><dig><op><exp>",5))
-dig <- c("1","2","3","4","5","6","7","8","9")
+constante <- c(rep("0.<dig><dig><dig>",0),rep("0.<dig><dig><dig><op><exp>",5))
 
-P <- list(c(basicas,variavel,exp_natural,constante),op,var,dig)
+
+P <- list(c(basicas,exp_natural,constante),op,var,dig)
 #P <- list(c(basicas,seno,cosseno,senoh,cossenoh,tangente,tangenteh,modulo,incremento,decremento,logaritmo,exp_natural,raiz,constante),op,var,dig)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
@@ -161,6 +160,7 @@ for (i in 1:cromo_quant) {
     }
   }
 }
+derivacao
 ```
 
 
@@ -173,7 +173,6 @@ training.model <- trainingData[,c("strength")]
 erroQuadraticoMedio <- rep(Inf,cromo_quant)
 for (k in 1:cromo_quant){
   training.data <- c()
-  caso.nan <- FALSE
   for (i in 1:length(training.model)){
     #x <- testData[i,1]
     #y <- testData[i,2]
@@ -403,7 +402,7 @@ for (g in 1:N){
             # se terminar em operador
             if (last.char%in%op){
               tmp <- substr(tmp,1,nchar(tmp)-1)    
-            } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
+            } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^(" || last.char=="."){
               tmp <- substr(tmp,1,nchar(tmp)-2)
             } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h(" || substr(tmp,nchar(tmp)-1,nchar(tmp))=="t("){
               tmp <- substr(tmp,1,nchar(tmp)-5)
@@ -622,8 +621,9 @@ for (g in 1:N){
     cromossomo_vencedor <- C[vencedor,]
     derivacao_vencedora <- derivacao[vencedor]
     populacao_vencedora <- C
-    cat("Achou pto de mínimo: ",raizErroQuadraticoMedio,"\n")
+    cat("Achou pto de mínimo: ",raizErroQuadraticoMedio," com derivação: ",derivacao_vencedora,"\n")
   }
+  cat("Fim Geração ", N,"\n")
 }
 ```
 
