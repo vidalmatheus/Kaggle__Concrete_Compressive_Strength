@@ -1,6 +1,6 @@
 ---
 title: "Concrete Compressive Strength"
-subtitle: "CTC-34_Lab2: Evolução Grmátical"
+subtitle: "CTC-34_Lab2: Evolu????????o Grm????tical"
 author: "Matheus Vidal & Pedro Alves"
 date: "17/11/2019"
 output:
@@ -13,71 +13,120 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Definição da Gramática
+## Defini????????o da Gram????tica
 
 ```{r}
-# Limpa área de trabalho
+# Limpa ????rea de trabalho
 rm(list = ls())
 
-# Não Terminais
+#set seed
+set.seed(165465)
+
+# N????o Terminais
 V <- c("<exp>","<op>","<var>","<sin>","<cos>","<log>","<e>","<^>","<abs>","<inc>","<dec>","<const>")
 
 # Terminais
 op <- c("+","-","/","*")
-# Geração de constantes
+#op <- c("+","-","*")
+# Gera????????o de constantes
 max_const <- 3.15
-const_quant <- 250000
-amostra <- 250000
-const <- runif(const_quant,min = -max_const,max=max_const)
+const_quant <- 10000
+amostra <- 10000
+const <- runif(const_quant,min = 0,max=max_const)
+
+max_const <- 10
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
 
 max_const <- 100
-const_quant <- 250000
-amostra <- 250000
-const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
+
 
 max_const <- 1000
-const_quant <- 250000
-amostra <- 250000
-const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
+
+max_const <- 10000
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
 
 max_const <- 100000
-const_quant <- 250000
-amostra <- 250000
-const <- c(const, runif(const_quant,min = -max_const,max=max_const))
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
 
-var <- rep(c("x","y","z","u","v","w","p","q"),10000)
+max_const <- 1000000
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
+
+max_const <- 10000000
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
+
+max_const <- 100000000
+const_quant <- 1000
+amostra <- 1000
+const <- c(const, runif(const_quant,min = max_const/2,max=max_const*1.5))
+
+var <- rep(c("x","y","z","u","v","w","p","q"),25000)
 var<-c(var,const)
 sigma <- c(op,var)
 
 #sigma <- c("+","-","/","*","x","y")
 
-# Símbolo Inicial
+# S?????mbolo Inicial
 S <- "<exp>"
 
-# Produções
-basicas <- rep(c("<exp><op><exp>"),1200)
-variavel <- rep(c("<var>"),900)
-seno <- c("sin(<var>)",rep(c("sin(<var><op><exp>)"),9))
-cosseno <- c("cos(<var>)",rep(c("cos(<var><op><exp>)"),9))
-logaritmo <- c("log(<var>)",rep(c("log(<var><op><exp>)"),9))
-exp_natural <- c("exp(<var>)",rep(c("exp(<var><op><exp>)"),9))
-exponencial <- c("<exp>^(<var>)",rep(c("<exp>^(<var><op><exp>)"),9))
-modulo <- c("abs(<var>)",rep(c("abs(<var><op><exp>)"),9))
+# Produ????????es
+basicas <- c(rep(c("<var>"),500),rep(c("<var><op><exp>"),2500),rep(c("<var><op><exp>"),0))
+seno <- c(rep(c("sin(<var>)"),35),rep(c("sin(<exp>)"),15),rep(c("sin(<var>)<op><exp>"),20),rep(c("sin(<exp>)<op><exp>"),10))
+aseno <- c(rep(c("asin(<var>)"),35),rep(c("asin(<exp>)"),15),rep(c("asin(<var>)<op><exp>"),20),rep(c("asin(<exp>)<op><exp>"),10))
+senoh <- c(rep(c("sinh(<var>)"),35),rep(c("sinh(<exp>)"),15),rep(c("sinh(<var>)<op><exp>"),20),rep(c("sinh(<exp>)<op><exp>"),10))
+asenoh <- c(rep(c("asinh(<var>)"),35),rep(c("asinh(<exp>)"),15),rep(c("asinh(<var>)<op><exp>"),20),rep(c("asinh(<exp>)<op><exp>"),10))
+cosseno <- c(rep(c("cos(<var>)"),35),rep(c("cos(<exp>)"),15),rep(c("cos(<var>)<op><exp>"),20),rep(c("cos(<exp>)<op><exp>"),10))
+acosseno <- c(rep(c("acos(<var>)"),35),rep(c("acos(<exp>)"),15),rep(c("acos(<var>)<op><exp>"),20),rep(c("acos(<exp>)<op><exp>"),10))
+cossenoh <- c(rep(c("cosh(<var>)"),35),rep(c("cosh(<exp>)"),15),rep(c("cosh(<var>)<op><exp>"),20),rep(c("cosh(<exp>)<op><exp>"),10))
+acossenoh <- c(rep(c("acosh(<var>)"),35),rep(c("acosh(<exp>)"),15),rep(c("acosh(<var>)<op><exp>"),20),rep(c("acosh(<exp>)<op><exp>"),10))
+tangente <- c(rep(c("tan(<var>)"),35),rep(c("tan(<exp>)"),15),rep(c("tan(<var>)<op><exp>"),20),rep(c("tan(<exp>)<op><exp>"),10))
+atangente <- c(rep(c("atan(<var>)"),35),rep(c("atan(<exp>)"),15),rep(c("atan(<var>)<op><exp>"),20),rep(c("atan(<exp>)<op><exp>"),10))
+tangenteh <- c(rep(c("tanh(<var>)"),35),rep(c("tanh(<exp>)"),15),rep(c("tanh(<var>)<op><exp>"),20),rep(c("tanh(<exp>)<op><exp>"),10))
+atangenteh <- c(rep(c("atanh(<var>)"),35),rep(c("atanh(<exp>)"),15),rep(c("atanh(<var>)<op><exp>"),20),rep(c("atanh(<exp>)<op><exp>"),10))
+logaritmo <- rep(c(rep(c("log(<var>)"),35),rep(c("log(<exp>)"),15),rep(c("log(<var>)<op><exp>"),20),rep(c("log(<exp>)<op><exp>"),10)),5)
+exp_natural <- rep(c(rep(c("exp(<var>)"),35),rep(c("exp(<exp>)"),15),rep(c("exp(<var>)<op><exp>"),20),rep(c("exp(<exp>)<op><exp>"),10)),5)
+exponencial <- rep(c(rep(c("<exp>^(<var>)"),35),rep(c("<exp>^(<exp>)"),15),rep(c("<exp>^(<var>)<op><exp>"),20),rep(c("<exp>^(<exp>)<op><exp>"),10)),2)
+modulo <- rep(c(rep(c("abs(<var>)"),35),rep(c("abs(<exp>)"),15),rep(c("abs(<var>)<op><exp>"),20),rep(c("abs(<exp>)<op><exp>"),10)),2)
+quadrada <- rep(c(rep(c("sqrt(<var>)"),35),rep(c("sqrt(<exp>)"),15),rep(c("sqrt(<var>)<op><exp>"),20),rep(c("sqrt(<exp>)<op><exp>"),10)),5)
 
 
 
 
-P <- list(c(basicas,seno,cosseno,logaritmo,exp_natural,exponencial,modulo),op,var)
+P <- list(c(basicas,quadrada,seno,aseno,asenoh,cosseno,cossenoh,acosseno,senoh,cossenoh,logaritmo,tangente,atangenteh,atangente,tangenteh,
+            exp_natural,exponencial,modulo),op,var)
 #P <- list(c("<exp><op><exp>","<var>"),op,var)
 
 ```
 
 ## Definindo os Cromossomos
 ```{r}
-cromo_size <- 100
-cromo_quant <- 1000
-max_gene <- 100000
-C <- matrix(sample(max_gene,cromo_size*cromo_quant),cromo_quant,cromo_size) # Ci = C[i,]
+cromo_size <- 200
+cromo_quant <- 100
+max_gene <- 10000000
+p.mutacao <- c(0,0,0.01,0.03,0.05,0.1,0.2,0.35,0.55,0.80,1,1,1)
+p.cruzamento <- 0.4
+if(max_gene < cromo_size*cromo_quant){
+  max_gene <- cromo_size*cromo_quant
+}
+first_sorteados_fraction <- 10
+order_size_fraction <- 3
+prop_filhos <- 2
+C <- matrix(sample(max_gene,max_gene),cromo_quant,cromo_size) # Ci = C[i,]
 
 ```
 
@@ -88,7 +137,7 @@ trainingData <- read.csv(file="training.csv", header=TRUE, sep=",")
 
 ```
 
-## Gerando Derivação
+## Gerando Deriva????????o
 
 ```{r}
 # SOMENTE PARA TESTE
@@ -98,7 +147,8 @@ trainingData <- read.csv(file="training.csv", header=TRUE, sep=",")
 #C[4,] <- c(20,5,200,5,67,23)
 # FIM
 S <- "<exp>"
-derivacao <- rep(S,cromo_quant) # símbolo inicial
+derivacao <- rep(S,cromo_quant) # s?????mbolo inicial
+endCromo <- array(0,cromo_quant)
 for (i in 1:cromo_quant) {
   S <- "<exp>"
   j <- 0
@@ -106,7 +156,7 @@ for (i in 1:cromo_quant) {
   while (S!="<NA>"){
     count <- count + 1
     # evitar loop infinito, para cromossomos mal escolhidos:
-    if (count > 30){
+    if (count > cromo_size){
       tmp <- stringr::str_match(derivacao[i], ".*?<")
       tmp <- substr(tmp,1,nchar(tmp)-1)
       if (is.na(tmp)){
@@ -114,8 +164,7 @@ for (i in 1:cromo_quant) {
         if (!last.char%in%var){
           tmp <- substr(derivacao[i],1,nchar(derivacao[i])-1)  
         }
-      }
-      else {
+      } else {
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
         if (!last.char%in%var){ 
           # se terminar em operador
@@ -123,6 +172,22 @@ for (i in 1:cromo_quant) {
             tmp <- substr(tmp,1,nchar(tmp)-1)    
           } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
             tmp <- substr(tmp,1,nchar(tmp)-2)
+          } else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="asinh("){
+            tmp <- substr(tmp,1,nchar(tmp)-6)
+          }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="acosh("){
+            tmp <- substr(tmp,1,nchar(tmp)-6)
+          }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="atanh("){
+             tmp <- substr(tmp,1,nchar(tmp)-6)
+          } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="sqrt("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="asin("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="acos("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="atan("){
+             tmp <- substr(tmp,1,nchar(tmp)-5)
           } else if (last.char=="("){
             tmp <- substr(tmp,1,nchar(tmp)-4)    
           }
@@ -132,8 +197,9 @@ for (i in 1:cromo_quant) {
         if (last.char%in%op){
           tmp <- substr(tmp,1,nchar(tmp)-1)    
         }
+        endCromo[i] <- -1
       }
-      # colocar parênteses restantes
+      # colocar par????nteses restantes
       abrindo <- stringr::str_count(tmp,"\\(")
       fechando <- stringr::str_count(tmp,"\\)")
       add <- strrep(")",abrindo-fechando)
@@ -145,22 +211,24 @@ for (i in 1:cromo_quant) {
     j <- j%%cromo_size + 1
     if (S=="<exp>"){
       rule <- P[[1]][1+C[i,j]%%length(P[[1]])] # determina a regra a ser aplicada
-      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
       S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-      S <- paste("<",S[,2],">",sep = "") # novo símbolo
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
     } else if (S=="<op>"){
       rule <- P[[2]][1+C[i,j]%%length(P[[2]])] # determina a regra a ser aplicada
-      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
       S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-      S <- paste("<",S[,2],">",sep = "") # novo símbolo
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
     } else if (S=="<var>"){
       rule <- P[[3]][1+C[i,j]%%length(P[[3]])] # determina a regra a ser aplicada
-      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
       S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-      S <- paste("<",S[,2],">",sep = "") # novo símbolo
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
     }
   }
+  endCromo[i] <- endCromo[i] + count
 }
+View(derivacao)
 ```
 
 ## Caso de Teste
@@ -170,7 +238,7 @@ for (i in 1:cromo_quant) {
 
 ```
 
-## Avaliação dos Cromossomos
+## Avalia????????o dos Cromossomos
 
 ```{r}
 options(warn = -1)
@@ -205,64 +273,114 @@ erroQuadraticoMedio
 ```{r}
 sorteados <- c()
 #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
-validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
-sorteados <- order(erroQuadraticoMedio[validos])[1:50]
-for (i in 51:cromo_quant){
+invalidosNanInf <- which(erroQuadraticoMedio %in% c(NaN,Inf))
+invalidosVazio <- which(derivacao %in% c(""))
+invalidos <- c(invalidosNanInf,invalidosVazio,which(duplicated(derivacao)))
+validos <-c(1:length(derivacao))[which(!c(1:length(derivacao)) %in% invalidos)]
+
+first_sorteados <- length(validos)%/%first_sorteados_fraction
+order_size <- (order_size_fraction*length(validos))%/%first_sorteados_fraction
+ordenados <- validos[order(erroQuadraticoMedio[validos])][1:order_size]
+sorteados <- validos[order(erroQuadraticoMedio[validos])][1:first_sorteados]
+
+for (i in (first_sorteados+1):(order_size*prop_filhos+first_sorteados+1)){
+  sorteio <- rep(NA,cromo_quant)
+  pos <- sample(ordenados,2) # sorteio dois crommossomos
+  #sorteio[pos[i,]] <- pos[i,]
+  sorteio[pos] <- pos
+  sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
+}
+
+for (i in (order_size*prop_filhos+first_sorteados+2):cromo_quant){
   sorteio <- rep(NA,cromo_quant)
   pos <- sample(validos,2) # sorteio dois crommossomos
   #sorteio[pos[i,]] <- pos[i,]
   sorteio[pos] <- pos
   sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
 }
+#antigo <- C[1:(first_sorteados+15),1:15]
+C <- C[sorteados,]
+endCromo <- endCromo[sorteados]
 
 sorteados
 ```
 
+##Encreve comossoma antigo e novo parcialmente
+
+```{r}
+#antigo
+#novo01 <- C[1:(first_sorteados+15),1:15]
+```
+
+##Encreve comossoma antigo e novo parcialmente
+
+```{r}
+#novo01
+```
+
+
 ## Cruzamento de Cromossomos
 
 ```{r}
-p.cruzamento <- 0.8
-i <- 51
+i <- (first_sorteados+1)
 while (i < length(sorteados)){
   # avalia a possibilidade de cruzamento de cada par
   vai.cruzar <- runif(1)
   if (vai.cruzar<=p.cruzamento){ # realiza cruzamento
-    pto.cruza <- sample(cromo_size-1,1)
-    index_pai <- sorteados[i]
-    index_mae <- sorteados[i+1]
+    pto.cruza <- endCromo[i]
+    if(pto.cruza > endCromo[i+1])
+    {
+      pto.cruza <- endCromo[i+1]
+    }
+    pto.cruza <- sample(pto.cruza-1,1)
+    index_pai <- i
+    index_mae <- i+1
     tmp <- C[index_pai,(pto.cruza+1):cromo_size]
     C[index_pai,(pto.cruza+1):cromo_size] <- C[index_mae,(pto.cruza+1):cromo_size] 
     C[index_mae,(pto.cruza+1):cromo_size] <- tmp
   }
-  i <- i+2 # pula o próximo cromossomo (estamos olhando os pares)
+  i <- i+2 # pula o pr????ximo cromossomo (estamos olhando os pares)
 }
+#novo02 <- C[1:(first_sorteados+15),1:15]
+#novo02
 ```
-
-## Mutação
+## Muta????????o
 
 ```{r}
-p.mutacao <- 0.4
-vai.mutar <- runif(cromo_size*cromo_quant)
-for (i in 51:length(vai.mutar)){
-  if (vai.mutar[i]<p.mutacao){
-    linha <- i%%cromo_quant+1
-    coluna <- (i-cromo_size*(i%%cromo_quant))%%cromo_size
-    C[linha,coluna] <- sample(max_gene,1)
+vai.mutar <- matrix(runif(cromo_quant*cromo_size),cromo_quant,cromo_size)
+divisa_prob <- cromo_size%/%first_sorteados_fraction
+for (i in (first_sorteados+1):cromo_quant){
+  linhaMutar <- vai.mutar[i,]
+  id <- which(linhaMutar < p.mutacao[i%/%divisa_prob+1])
+  for (j in 1:length(id)){
+    coluna <- id[j]
+    C[i,coluna] <- sample(max_gene,1)
   }
 }
+#novo03 <- C[1:(first_sorteados+15),1:15]
+#novo03
 ```
 
-## Após N Gerações
+## Conta As gera????es do 0
+```{r}
+ngeracoes <- 0
+```
+## Ap????s N Gera????????es
 
-Repetindo para N gerações.
+Repetindo para N gera????????es.
 
 ```{r}
-N <- 150 # número de gerações
+N <- 200 # n????mero de gera????????es
+ngeracoes <- ngeracoes + N
+erroQuadraticoMediomin <- Inf
 for (g in 1:N){
-  ## Gerando Derivação
-
+  ## Gerando Deriva????????o
+  if(g%%5 == 0){
+    cat("Gera????o: ", g,"\n")
+  }
   S <- "<exp>"
-  derivacao <- rep(S,cromo_quant) # símbolo inicial
+  derivacao <- rep(S,cromo_quant) # s?????mbolo inicial
+  endCromo <- array(0,cromo_quant)
   for (i in 1:cromo_quant) {
     S <- "<exp>"
     j <- 0
@@ -270,7 +388,7 @@ for (g in 1:N){
     while (S!="<NA>"){
       count <- count + 1
       # evitar loop infinito, para cromossomos mal escolhidos:
-      if (count > 30){
+      if (count > cromo_size){
         tmp <- stringr::str_match(derivacao[i], ".*?<")
         tmp <- substr(tmp,1,nchar(tmp)-1)
         if (is.na(tmp)){
@@ -278,8 +396,7 @@ for (g in 1:N){
           if (!last.char%in%var){
             tmp <- substr(derivacao[i],1,nchar(derivacao[i])-1)  
           }
-        }
-        else {
+        } else {
           last.char <- substr(tmp,nchar(tmp),nchar(tmp))
           if (!last.char%in%var){ 
             # se terminar em operador
@@ -287,6 +404,22 @@ for (g in 1:N){
               tmp <- substr(tmp,1,nchar(tmp)-1)    
             } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
               tmp <- substr(tmp,1,nchar(tmp)-2)
+            } else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="asinh("){
+              tmp <- substr(tmp,1,nchar(tmp)-6)
+            }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="acosh("){
+              tmp <- substr(tmp,1,nchar(tmp)-6)
+            }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="atanh("){
+               tmp <- substr(tmp,1,nchar(tmp)-6)
+            } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h("){
+              tmp <- substr(tmp,1,nchar(tmp)-5)
+            } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="sqrt("){
+              tmp <- substr(tmp,1,nchar(tmp)-5)
+            } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="asin("){
+              tmp <- substr(tmp,1,nchar(tmp)-5)
+            }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="acos("){
+              tmp <- substr(tmp,1,nchar(tmp)-5)
+            }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="atan("){
+               tmp <- substr(tmp,1,nchar(tmp)-5)
             } else if (last.char=="("){
               tmp <- substr(tmp,1,nchar(tmp)-4)    
             }
@@ -296,8 +429,9 @@ for (g in 1:N){
           if (last.char%in%op){
             tmp <- substr(tmp,1,nchar(tmp)-1)    
           }
+          endCromo[i] <- -1
         }
-        # colocar parênteses restantes
+        # colocar par????nteses restantes
         abrindo <- stringr::str_count(tmp,"\\(")
         fechando <- stringr::str_count(tmp,"\\)")
         add <- strrep(")",abrindo-fechando)
@@ -309,24 +443,26 @@ for (g in 1:N){
       j <- j%%cromo_size + 1
       if (S=="<exp>"){
         rule <- P[[1]][1+C[i,j]%%length(P[[1]])] # determina a regra a ser aplicada
-        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
         S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-        S <- paste("<",S[,2],">",sep = "") # novo símbolo
+        S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
       } else if (S=="<op>"){
         rule <- P[[2]][1+C[i,j]%%length(P[[2]])] # determina a regra a ser aplicada
-        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
         S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-        S <- paste("<",S[,2],">",sep = "") # novo símbolo
+        S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
       } else if (S=="<var>"){
         rule <- P[[3]][1+C[i,j]%%length(P[[3]])] # determina a regra a ser aplicada
-        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substituição
+        derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
         S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
-        S <- paste("<",S[,2],">",sep = "") # novo símbolo
+        S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
       }
     }
+    endCromo[i] <- endCromo[i] + count
   }
+  View(derivacao)
   
-  ## Avaliação dos Cromossomos
+  ## Avalia????????o dos Cromossomos
   
   training.model <- trainingData[,c("strength")]
   erroQuadraticoMedio <- rep(0,cromo_quant)
@@ -346,60 +482,181 @@ for (g in 1:N){
     }
     erroQuadraticoMedio[k] <- mean((training.data - (training.model))^2) 
   }
-  erroQuadraticoMedio
-  
+  #erroQuadraticoMedio
   ## Torneio de Cromossomos
-  
+    
   sorteados <- c()
   #pos <- rbind(c(1,3),c(2,3),c(3,4),c(2,4))
-  validos <- which(!erroQuadraticoMedio %in% c(NaN,Inf))
-  sorteados <- order(erroQuadraticoMedio[validos])[1:50]
-  for (i in 51:cromo_quant){
+  invalidosNanInf <- which(erroQuadraticoMedio %in% c(NaN,Inf))
+  invalidosVazio <- which(derivacao %in% c(""))
+  invalidos <- c(invalidosNanInf,invalidosVazio,which(duplicated(derivacao)))
+  validos <-c(1:length(derivacao))[which(!c(1:length(derivacao)) %in% invalidos)]
+  
+  first_sorteados <- length(validos)%/%first_sorteados_fraction
+  order_size <- (order_size_fraction*length(validos))%/%first_sorteados_fraction
+  ordenados <- validos[order(erroQuadraticoMedio[validos])][1:order_size]
+  sorteados <- validos[order(erroQuadraticoMedio[validos])][1:first_sorteados]
+  
+  if(length(sorteados)>0)
+  {
+    if(erroQuadraticoMedio[sorteados[1]]<erroQuadraticoMediomin)
+    {
+      erroQuadraticoMediomin<-erroQuadraticoMedio[sorteados[1]]
+      cromossomo_vencedor <- C[sorteados[1],]
+      derivacao_vencedora <- derivacao[sorteados[1]]
+      cat("Achou pto de m??nimo: ",sqrt(erroQuadraticoMediomin)," com deriva????o: ",derivacao_vencedora,"\n")
+    }
+  }
+  
+  
+  for (i in (first_sorteados+1):(order_size*prop_filhos+first_sorteados+1)){
+    sorteio <- rep(NA,cromo_quant)
+    pos <- sample(ordenados,2) # sorteio dois crommossomos
+    #sorteio[pos[i,]] <- pos[i,]
+    sorteio[pos] <- pos
+    sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
+  }
+  
+  for (i in (order_size*prop_filhos+first_sorteados+2):cromo_quant){
     sorteio <- rep(NA,cromo_quant)
     pos <- sample(validos,2) # sorteio dois crommossomos
     #sorteio[pos[i,]] <- pos[i,]
     sorteio[pos] <- pos
     sorteados <- c(sorteados,which.min(erroQuadraticoMedio[sorteio]))
   }
+  #antigo <- C[1:(first_sorteados+15),1:15]
+  C <- C[sorteados,]
   
-  sorteados
+  #sorteados
   
   ## Cruzamento de Cromossomos
   
-  p.cruzamento <- 0.8
-  i <- 51
+  i <- (first_sorteados+1)
   while (i < length(sorteados)){
     # avalia a possibilidade de cruzamento de cada par
     vai.cruzar <- runif(1)
     if (vai.cruzar<=p.cruzamento){ # realiza cruzamento
-      pto.cruza <- sample(cromo_size-1,1)
-      index_pai <- sorteados[i]
-      index_mae <- sorteados[i+1]
+      pto.cruza <- endCromo[i]
+      if(pto.cruza > endCromo[i+1])
+      {
+        pto.cruza <- endCromo[i+1]
+      }
+      pto.cruza <- sample(pto.cruza-1,1)
+      index_pai <- i
+      index_mae <- i+1
       tmp <- C[index_pai,(pto.cruza+1):cromo_size]
       C[index_pai,(pto.cruza+1):cromo_size] <- C[index_mae,(pto.cruza+1):cromo_size] 
       C[index_mae,(pto.cruza+1):cromo_size] <- tmp
     }
-    i <- i+2 # pula o próximo cromossomo (estamos olhando os pares)
+    i <- i+2 # pula o pr????ximo cromossomo (estamos olhando os pares)
   }
   
-  ## Mutação
+  ## Muta????????o
   
-  p.mutacao <- 0.4
-  vai.mutar <- runif(cromo_size*cromo_quant)
-  for (i in 51:length(vai.mutar)){
-    if (vai.mutar[i]<p.mutacao){
-      linha <- i%%cromo_quant+1
-      coluna <- (i-cromo_size*(i%%cromo_quant))%%cromo_size
-      C[linha,coluna] <- sample(max_gene,1)
+  vai.mutar <- matrix(runif(cromo_quant*cromo_size),cromo_quant,cromo_size)
+  divisa_prob <- cromo_size%/%first_sorteados_fraction
+  for (i in (first_sorteados+1):cromo_quant){
+    linhaMutar <- vai.mutar[i,]
+    id <- which(linhaMutar < p.mutacao[i%/%divisa_prob+1])
+    for (j in 1:length(id)){
+      coluna <- id[j]
+      C[i,coluna] <- sample(max_gene,1)
     }
   }
 
 }
+
+##Encontra as ultimas deriva????es
+## Gerando Deriva????????o
+S <- "<exp>"
+derivacao <- rep(S,cromo_quant) # s?????mbolo inicial
+endCromo <- array(0,cromo_quant)
+for (i in 1:cromo_quant) {
+  S <- "<exp>"
+  j <- 0
+  count <- 0
+  while (S!="<NA>"){
+    count <- count + 1
+    # evitar loop infinito, para cromossomos mal escolhidos:
+    if (count > cromo_size){
+      tmp <- stringr::str_match(derivacao[i], ".*?<")
+      tmp <- substr(tmp,1,nchar(tmp)-1)
+      if (is.na(tmp)){
+        last.char <- substr(tmp,nchar(derivacao[i]),nchar(derivacao[i]))
+        if (!last.char%in%var){
+          tmp <- substr(derivacao[i],1,nchar(derivacao[i])-1)  
+        }
+      } else {
+        last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+        if (!last.char%in%var){ 
+          # se terminar em operador
+          if (last.char%in%op){
+            tmp <- substr(tmp,1,nchar(tmp)-1)    
+          } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="^("){
+            tmp <- substr(tmp,1,nchar(tmp)-2)
+          } else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="asinh("){
+            tmp <- substr(tmp,1,nchar(tmp)-6)
+          }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="acosh("){
+            tmp <- substr(tmp,1,nchar(tmp)-6)
+          }  else if (substr(tmp,nchar(tmp)-5,nchar(tmp))=="atanh("){
+             tmp <- substr(tmp,1,nchar(tmp)-6)
+          } else if (substr(tmp,nchar(tmp)-1,nchar(tmp))=="h("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="sqrt("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          } else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="asin("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="acos("){
+            tmp <- substr(tmp,1,nchar(tmp)-5)
+          }  else if (substr(tmp,nchar(tmp)-4,nchar(tmp))=="atan("){
+             tmp <- substr(tmp,1,nchar(tmp)-5)
+          } else if (last.char=="("){
+            tmp <- substr(tmp,1,nchar(tmp)-4)    
+          }
+        }
+        last.char <- substr(tmp,nchar(tmp),nchar(tmp))
+        # se terminar em operador
+        if (last.char%in%op){
+          tmp <- substr(tmp,1,nchar(tmp)-1)    
+        }
+        endCromo[i] <- -1
+      }
+      # colocar par????nteses restantes
+      abrindo <- stringr::str_count(tmp,"\\(")
+      fechando <- stringr::str_count(tmp,"\\)")
+      add <- strrep(")",abrindo-fechando)
+      tmp <- paste(tmp,add,sep = "")
+    
+      derivacao[i] <- tmp
+      S <- "<NA>"
+    }
+    j <- j%%cromo_size + 1
+    if (S=="<exp>"){
+      rule <- P[[1]][1+C[i,j]%%length(P[[1]])] # determina a regra a ser aplicada
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
+      S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
+    } else if (S=="<op>"){
+      rule <- P[[2]][1+C[i,j]%%length(P[[2]])] # determina a regra a ser aplicada
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
+      S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
+    } else if (S=="<var>"){
+      rule <- P[[3]][1+C[i,j]%%length(P[[3]])] # determina a regra a ser aplicada
+      derivacao[i] <- sub(S, rule, derivacao[i]) # atualiza derivacao por substitui????????o
+      S <- stringr::str_match(derivacao[i], "<(.*?)>") # acha o primeiro <..>
+      S <- paste("<",S[,2],">",sep = "") # novo s?????mbolo
+    }
+  }
+  endCromo[i] <- endCromo[i] + count
+}
+  
+View(derivacao)
 ```
 
 ## Escolha do Cromossomo Vencedor
 
-Escolhemos o melhor cromossomo, <i>i.e.</i>, o de menor erro quadrático médio.
+Escolhemos o melhor cromossomo, <i>i.e.</i>, o de menor erro quadr????tico m????dio.
 
 ```{r}
 training.model <- trainingData[,c("strength")]
@@ -423,8 +680,10 @@ for (k in 1:cromo_quant){
 
 # Cromossomo vencedor:
 vencedor <- which.min(erroQuadraticoMedio)
+erroQuadraticoMedio
 vencedor
 derivacao[vencedor]
+erroQuadraticoMedio[vencedor]
 ```
 
 ## Carregamento dos Dados de Teste
@@ -434,22 +693,22 @@ testingData <- read.csv(file="testing.csv", header=TRUE, sep=",")
 
 ```
 
-## Predição de Dados
+## Predi????????o de Dados
 
-Vamos aplicar o cromossomo vencedor para predizer o dado de saída a partir de entradas advindas de <i>testing.csv</i>.
+Vamos aplicar o cromossomo vencedor para predizer o dado de sa?????da a partir de entradas advindas de <i>testing.csv</i>.
 
 
 ```{r}
 predict.data <- c()
 for (i in 1:dim(testingData)[1]){
-  x <- trainingData[i,2]
-  y <- trainingData[i,3]
-  z <- trainingData[i,4]
-  u <- trainingData[i,5]
-  v <- trainingData[i,6]
-  w <- trainingData[i,7]
-  p <- trainingData[i,8]
-  q <- trainingData[i,9]
+  x <- testingData[i,2]
+  y <- testingData[i,3]
+  z <- testingData[i,4]
+  u <- testingData[i,5]
+  v <- testingData[i,6]
+  w <- testingData[i,7]
+  p <- testingData[i,8]
+  q <- testingData[i,9]
   predict.data <- c(predict.data,eval(parse(text=derivacao[vencedor])))
 }
 ```
