@@ -34,7 +34,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produções
-basicas <- c(rep("<var>",0),rep("<exp><op><exp>",30)) # as operações básicas são mais prováveis
+basicas <- c(rep("<var>",1),rep("<exp><op><exp>",30)) # as operações básicas são mais prováveis
 seno <- c("sin(<var>)","sin(<var><op><exp>)")
 senoh <- c("sinh(<var>)","sinh(<var><op><exp>)")
 cosseno <- c("cos(<var>)","cos(<var><op><exp>)")
@@ -48,7 +48,7 @@ raiz <- c("sqrt(<var>)","sqrt(<var><op><exp>)")
 modulo <- c("abs(<var>)","abs(<var><op><exp>)")
 incremento <- c("<var>+1","<var>+1<op><exp>")
 decremento <- c("<var>-1","<var>-1<op><exp>")
-constante <- c(rep("0.<dig><dig><dig>",0),rep("0.<dig><dig><dig><op><exp>",5))
+constante <- c(rep("0.<dig><dig><dig>",1),rep("0.<dig><dig><dig><op><exp>",1))
 
 
 P <- list(c(basicas,exp_natural,constante),op,var,dig)
@@ -60,10 +60,10 @@ P <- list(c(basicas,exp_natural,constante),op,var,dig)
 ## Definindo os Cromossomos
 ```{r}
 cromo_size <- 200
-cromo_quant <- 100
+cromo_quant <- 300
 max_gene <- 100000
 max_subst <- 100
-fator_cruzamento <- 4
+fator_cruzamento <- 2
 C <- matrix(sample(max_gene,cromo_size*cromo_quant,replace = TRUE),cromo_quant,cromo_size) # Ci = C[i,]
 
 ```
