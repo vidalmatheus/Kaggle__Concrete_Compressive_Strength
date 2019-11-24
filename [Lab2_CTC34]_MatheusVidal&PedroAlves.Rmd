@@ -623,7 +623,7 @@ for (g in 1:N){
     populacao_vencedora <- C
     cat("Achou pto de mínimo: ",raizErroQuadraticoMedio," com derivação: ",derivacao_vencedora,"\n")
   }
-  cat("Fim Geração ", N,"\n")
+  cat("Fim Geração ", g,"\n")
 }
 ```
 
