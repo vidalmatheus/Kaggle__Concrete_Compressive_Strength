@@ -85,7 +85,7 @@ sigma <- c(op,var)
 S <- "<exp>"
 
 # Produ????????es
-basicas <- c(rep(c("<var>"),500),rep(c("<var><op><exp>"),2500),rep(c("<var><op><exp>"),0))
+basicas <- c(rep(c("<var>"),1000),rep(c("<var><op><exp>"),5000),rep(c("<var><op><exp>"),0))
 seno <- c(rep(c("sin(<var>)"),35),rep(c("sin(<exp>)"),15),rep(c("sin(<var>)<op><exp>"),20),rep(c("sin(<exp>)<op><exp>"),10))
 aseno <- c(rep(c("asin(<var>)"),35),rep(c("asin(<exp>)"),15),rep(c("asin(<var>)<op><exp>"),20),rep(c("asin(<exp>)<op><exp>"),10))
 senoh <- c(rep(c("sinh(<var>)"),35),rep(c("sinh(<exp>)"),15),rep(c("sinh(<var>)<op><exp>"),20),rep(c("sinh(<exp>)<op><exp>"),10))
@@ -348,7 +348,7 @@ while (i < length(sorteados)){
 
 ```{r}
 vai.mutar <- matrix(runif(cromo_quant*cromo_size),cromo_quant,cromo_size)
-divisa_prob <- cromo_size%/%first_sorteados_fraction
+divisa_prob <- cromo_quant%/%first_sorteados_fraction
 for (i in (first_sorteados+1):cromo_quant){
   linhaMutar <- vai.mutar[i,]
   id <- which(linhaMutar < p.mutacao[i%/%divisa_prob+1])
@@ -370,7 +370,7 @@ ngeracoes <- 0
 Repetindo para N gera????????es.
 
 ```{r}
-N <- 200 # n????mero de gera????????es
+N <- 10 # n????mero de gera????????es
 ngeracoes <- ngeracoes + N
 erroQuadraticoMediomin <- Inf
 for (g in 1:N){
@@ -554,7 +554,7 @@ for (g in 1:N){
   ## Muta????????o
   
   vai.mutar <- matrix(runif(cromo_quant*cromo_size),cromo_quant,cromo_size)
-  divisa_prob <- cromo_size%/%first_sorteados_fraction
+  divisa_prob <- cromo_quant%/%first_sorteados_fraction
   for (i in (first_sorteados+1):cromo_quant){
     linhaMutar <- vai.mutar[i,]
     id <- which(linhaMutar < p.mutacao[i%/%divisa_prob+1])
@@ -729,8 +729,8 @@ boxplot(predict.data)
 ```{r}
 ID <- testingData[c("ID")]
 result <- data.frame(ID,predict.data)
-colnames(result) <- c("ID", "strength")
-write.table(result,file="predicted.csv",col.names = c("ID","strength"),sep = ",")
+colnames(result) <- c('ID', 'strength')
+write.table(result,file="predicted.csv",col.names = c('ID','strength'), row.names = FALSE,sep = ",", quote = FALSE)
 result.data <- read.csv(file="predicted.csv", header=TRUE, sep=",")
 
 ```
