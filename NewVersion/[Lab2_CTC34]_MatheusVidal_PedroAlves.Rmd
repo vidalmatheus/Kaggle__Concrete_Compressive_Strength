@@ -13,14 +13,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<!-- Justifica o texto -->
-<style>
-body {
-text-align: justify}
-</style>
-
-
 ## Definição da Gramática
+
+Na definição da gramática, criamos milhares de constantes de ordem de grandezas diferentes e um grupo em especial próximos de “pi”, estas poderão substituir os “<var>”, fazemos vários arrays para se escrever nas derivações dos cromossomos, as repetições nesses arrays são utilizadas para distribuir a probabilidade da expressão se formar, nelas temos expressões básicas, trigonométricas, hiperbólicas e logarítmicas.
+
+<!-- Importa a Imagem -->
+![](images/gramatica.PNG)
 
 ```{r}
 # Limpa Área de trabalho
@@ -135,6 +133,11 @@ order_size_fraction <- 3
 prop_filhos <- 2
 C <- matrix(sample(max_gene,max_gene),cromo_quant,cromo_size) # Ci = C[i,]
 
+# Adicionando o melhor cromossomo da geração passada
+cbom <- read.csv(file="cbom.csv", header=TRUE)
+cbom <- cbom[1:dim(cbom)[1],]
+C[1,] <- cbom
+
 ```
 
 ## Carregamento dos Dados de Treinamento
@@ -169,7 +172,7 @@ for (i in 1:cromo_quant) {
         }
       } else {
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
-        while (!last.char%in%var && last.char!=")"){
+        while (!last.char%in%var){
           # se terminar em operador
           if (last.char%in%op){
             tmp <- substr(tmp,1,nchar(tmp)-1)    
@@ -282,6 +285,7 @@ derivacao_vencedora
 ## Torneio de Cromossomos
 
 Do algoritmo genético, é feito o torneio de cromossomos, de modo a escolher o de melhor erro quadrático médio a cada disputa entre dois deles.
+No torneio de cromossomos, nós queremos uma variabilidade alta e um bom controle de qualidade, logo, selecionamos os cromossomos de derivações diferentes e com erro quadrático diferente de infinito, a partir manteremos os 10% melhores para a próxima geração, e todos irão participar de um torneio para serem cruzados e mutados.
 
 ```{r}
 sorteados <- c()
@@ -317,7 +321,8 @@ sorteados
 
 ## Cruzamento de Cromossomos
 
-COnforme o algoritmo genético, os cromossomos que vencedores de cada disputa são cruzados em pares.
+Conforme o algoritmo genético, os cromossomos que vencedores de cada disputa são cruzados em pares.
+No cruzamento, nós pegamos o pivô sempre tendo que estar no intervalo dos genes usados pela derivação, assim faz com que o cruzamento altere a derivação, logo o resultado.
 
 ```{r}
 i <- (first_sorteados+1)
@@ -344,6 +349,7 @@ while (i < length(sorteados)){
 ## Mutação
 
 Aqui, verifica-se a possibilidade de mutação de qualquer gene de qualquer cromossomo.
+A mutação não ocorre nos 10% melhores diretamente, mas nas suas copias feitas através do vetor de cromossomos, e ao passar um bloco conjunto de 10% dos cromossomos, onde o primeiro é composto pelos melhores a probabilidade de mudar cada gene irá aumentar, garantindo que os melhores passem por mutações pequenas e grandes.
 
 ```{r}
 vai.mutar <- matrix(runif(cromo_quant*cromo_size),cromo_quant,cromo_size)
@@ -399,7 +405,7 @@ Vamos repetir o processo acima para mais N gerações.
 ngeracoes <- 0 # Contador de Gerações do 0
 ```
 ```{r}
-N <- 200 # número de gerações
+N <- 1000 # número de gerações
 ngeracoes <- ngeracoes + N
 for (g in 1:N){
   ## Gerando Derivação
@@ -426,7 +432,7 @@ for (g in 1:N){
           }
         } else {
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
-        while (!last.char%in%var && last.char!=")"){
+        while (!last.char%in%var){
           # se terminar em operador
           if (last.char%in%op){
             tmp <- substr(tmp,1,nchar(tmp)-1)    
@@ -612,7 +618,7 @@ for (i in 1:cromo_quant) {
         }
       } else {
         last.char <- substr(tmp,nchar(tmp),nchar(tmp))
-        while (!last.char%in%var && last.char!=")"){
+        while (!last.char%in%var){
           # se terminar em operador
           if (last.char%in%op){
             tmp <- substr(tmp,1,nchar(tmp)-1)    
@@ -639,6 +645,7 @@ for (i in 1:cromo_quant) {
           }
           last.char <- substr(tmp,nchar(tmp),nchar(tmp))
         }
+      }
       # colocar parênteses restantes
       abrindo <- stringr::str_count(tmp,"\\(")
       fechando <- stringr::str_count(tmp,"\\)")
