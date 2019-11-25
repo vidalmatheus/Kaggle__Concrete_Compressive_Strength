@@ -404,8 +404,9 @@ Vamos repetir o processo acima para mais N gerações.
 ```{r}
 ngeracoes <- 0 # Contador de Gerações do 0
 ```
+
 ```{r}
-N <- 1000 # número de gerações
+N <- 50 # número de gerações
 ngeracoes <- ngeracoes + N
 for (g in 1:N){
   ## Gerando Derivação
