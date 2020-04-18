@@ -1,6 +1,6 @@
 ---
 title: "Concrete Compressive Strength"
-subtitle: "CTC-34_Lab2: Evolução Gramatical"
+subtitle: "CTC-34_Lab2: Grammatical Evolution"
 author: "Matheus Vidal & Pedro Alves"
 date: "17/11/2019"
 output:
