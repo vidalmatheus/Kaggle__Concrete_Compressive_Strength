@@ -1,5 +1,5 @@
-# Kaggle__Concrete_Compressive_Strength
-Kaggle competition named "Concrete Compressive Strength" and also a project for Automata and Formal Languages discipline over Computer Engineering undergrad.
+# Grammatical Evolution Machine Learning Application
+Concrete Compressive Strength Prediction
 
 For latest code version, please go to the Final Version directory.
 
