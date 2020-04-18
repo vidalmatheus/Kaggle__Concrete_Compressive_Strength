@@ -6,6 +6,7 @@ For the latest code version, please go to the Final Version directory.
 If you just want to check the final version of the code, you can access directly from:
 https://htmlpreview.github.io/?https://github.com/vidalmatheus/Kaggle__Concrete_Compressive_Strength/blob/master/3.Final%20Version/%5BLab2_CTC34%5D_MatheusVidal_PedroAlves.html
 
+https://www.kaggle.com/c/ctc-34-resistncia-de-concreto/overview
 
 Abstract: Concrete is the most important material in civil engineering. The
 concrete compressive strength is a highly nonlinear function of age and
